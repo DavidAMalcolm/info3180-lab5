@@ -1,4 +1,12 @@
 <template>
+<!-- Success message -->
+  <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+    <!-- Error messages -->
+  <div v-if="errorMessage" class="alert alert-danger">
+    <ul>
+      <li v-for="error in errorMessage" :key="error">{{ error }}</li>
+    </ul>
+  </div>
   <form id="movieForm" @submit.prevent="saveMovie">
     <div class="form-group mb-3">
       <label for="title" class="form-label">Movie Title</label>
@@ -21,6 +29,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+
+const successMessage = ref('');
+const errorMessage = ref('');
 
 let csrf_token = ref("");
 
@@ -47,9 +58,18 @@ const saveMovie = () => {
       'X-CSRFToken': csrf_token.value
     }
   })
-  .then(response => response.json())
+.then(response => {
+    if (!response.ok) {
+      return response.json().then(data => {
+        errorMessage.value = data.errors ? Object.values(data.errors) : ['Failed to submit form'];
+        throw new Error('Failed to submit form');
+      });
+    }
+    return response.json();
+  })
   .then(data => {
     // Display a success message
+    successMessage.value = 'Movie Successfully added';
     console.log(data);
   })
   .catch(error => {

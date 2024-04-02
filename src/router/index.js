@@ -23,11 +23,6 @@ const router = createRouter({
       name: "Movie View",
       component: AddMovieFormView,
     },
-    {
-      path: "/movies/create",
-      name: "Movie View",
-      component: AddMovieFormView,
-    },
   ],
 });
 
