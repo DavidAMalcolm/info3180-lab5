@@ -7,11 +7,12 @@ This file creates your application.
 
 import os
 
-from flask import jsonify, render_template, request, send_file
-
-from app import app
+from app import app, db
 from app.forms import MovieForm
 from app.models import Movie
+from flask import jsonify, redirect, render_template, request, send_file
+from flask_wtf.csrf import generate_csrf
+from werkzeug.utils import secure_filename
 
 ###
 # Routing for your application.
@@ -21,6 +22,11 @@ from app.models import Movie
 @app.route("/")
 def index():
     return jsonify(message="This is the beginning of our API")
+
+
+@app.route("/api/v1/csrf-token", methods=["GET"])
+def get_csrf():
+    return jsonify({"csrf_token": generate_csrf()})
 
 
 @app.route("/api/v1/movies", methods=["POST"])
@@ -95,4 +101,3 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template("404.html"), 404
-
